@@ -1,0 +1,505 @@
+<style>
+	@font-face {
+		font-family: 'digitalFont';
+		src: url('ds_digital/DS-DIGI.TTF');
+	}
+
+	body {
+		background-color: black;
+		text-align: center;
+		/*background-image: url('kepek/mount-erebus-cockpit.jpg');*/
+		background-position: center center;
+		background-size: cover;
+	}
+
+	div#countdown {
+		font-family: 'digitalFont';
+		color: red;
+		text-shadow: 0 0 50px red;
+
+		position: fixed;
+		top: 50px;
+		z-index: 0;
+
+		width: 98%;
+		height: 100%;
+		text-align: center;
+		font-size: 200px;
+
+		margin: auto;
+		padding: auto;
+	}
+
+	div#suits {
+		position: absolute;
+		top: 250px;
+		width: 98%;
+	}
+
+	div#suits table {
+		width: 1000px;
+		min-height: 300px;
+		text-align: center;
+		padding-left: auto;
+		padding-right: auto;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	div#suits tr {
+		width: 100%;
+		min-height: 300px;
+		text-align: center;
+	}
+
+	div#suits td {
+		width: 25%;
+	}
+
+	tr#suitsRow {
+		font-family: 'Arial';
+		font-size: 36px;
+		font-weight: bold;
+		color: white;
+		text-shadow: 0 0 50px white;
+	}
+
+    tr#textRowTop, tr#textRowBottom {
+        font-family: 'Arial';
+        font-family: 'digitalFont';
+        font-family: 'Courier New';
+        font-size: 72px;
+        font-weight: bold;
+        color: white;
+        text-shadow: 0 0 50px white;
+    }
+
+	tr#codeInputRow input[type=text] {
+	  	background-color: #000000;
+        background-color: #FFFFFF;
+	    height: 75px;
+	    
+	    background: #111;
+        background: #FFF;
+	    border: 1px solid #000;
+	    border-right: 1px solid #353535;
+	    border-bottom: 1px solid #353535;
+	    -webkit-border-radius: 5px;
+	    -moz-border-radius: 5px;
+	    border-radius: 5px;
+
+    	font-family: 'digitalFont';
+        font-family: 'Courier New';
+		color: white;
+        color: black;
+		/*text-shadow: 0 0 50px white;*/
+		font-size: 50px;
+		text-align: center;
+  	}
+
+ 	input#input1, input#input2 {
+		width: 300px;
+  	}
+
+	input#input3 {
+		width: 400px !important;
+	}
+
+    tr#markRow {
+        height: 90px;
+    }
+
+  	div#cross1, div#cross2, div#cross3 {
+		font-family: 'digitalFont';
+		color: red;
+		/* text-shadow: 0 0 50px red; */
+		text-align: center;
+		font-size: 50px;
+
+		padding-top: 30px;
+		display: none;
+	}
+
+	div#tick1, div#tick2, div#tick3 {
+		font-family: 'digitalFont';
+		color: green;
+		/* text-shadow: 0 0 50px red; */
+		text-align: center;
+		font-size: 50px;
+
+		padding-top: 30px;
+		display: none;
+	}
+
+	div#admin {
+		position: fixed;
+		top: 0;
+		right: 0;
+		z-index: 10;
+		width: 100px;
+	}
+
+	div#admin input{
+		color: white;
+		background-color: #000;
+		border: 0px;
+	}
+
+	div.endScreen {
+		display: none;
+		position: fixed;
+		left: 0;
+		width: 100%;
+		z-index: 5;
+		background-color: black;
+
+		text-transform: uppercase;
+		text-align: center;
+		font-family: 'Times New Roman';
+		color: white;
+		text-shadow: 0 0 50px white;
+	}
+
+	div#winScreen {
+		top: 380px;
+		height: 250px;
+		font-size: 150px;
+	}
+
+	div#loseScreen {
+		top: 0;
+		height: 250px;
+		font-size: 100px;
+	}
+
+	div.endScreen p {
+		position: relative;
+		padding: 0;
+		margin: 0;
+	}
+
+	div#winScreen p {
+		top: 100px;
+	}
+
+	div#loseScreen p {
+		top: 90px;
+	}
+</style>
+
+<html>
+	<head>
+		<script src="jquery-1.10.2.js"></script>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<script type="text/javascript">
+			$(window).bind('load', function() {
+
+				/* CODE CHECKING */
+				var SOLUTION = ["ELLIOT", "SZÁMSZERÍJ", "07/14"];
+				var INPUTS = [$("#input1"), $("#input2"), $("#input3")];
+				var CROSS_MARKS = [$("#cross1"), $("#cross2"), $("#cross3")]
+				var TICK_MARKS = [$("#tick1"), $("#tick2"), $("#tick3")]
+
+				function checkCorrectness(key) {
+					input = INPUTS[key];
+					var inputValue = input.val().toUpperCase();
+					var expectedValue = SOLUTION[key];
+					return inputValue == expectedValue;
+				}
+
+				function checkCompleted(key) {
+					input = INPUTS[key];
+					var inputValue = input.val().toUpperCase();
+					return inputValue != "";
+				}
+
+				function setCheckMark(key) {
+					var completed = checkCompleted(key)
+					var cross = CROSS_MARKS[key];
+					var tick = TICK_MARKS[key];
+					if (!completed) {
+						cross.hide();
+						tick.hide();
+					} else {
+						var correct = checkCorrectness(key)
+						if (correct) {
+							cross.hide();
+							tick.show();
+						} else {
+							cross.show();
+							tick.hide();
+						}
+					}
+				}
+
+				function checkOverallCorrectness() {
+					for (var key = 0; key < SOLUTION.length; key++) {
+						setCheckMark(key);
+					}
+					var overallCorrect = true;
+					for (var key = 0; key < SOLUTION.length; key++) {
+						var complete = checkCompleted(key);
+						var correct = checkCorrectness(key);
+						if (!complete || !correct) {
+							overallCorrect = false;
+							break;
+						}
+					}
+					if (overallCorrect) {
+						playHint();
+					}
+				}
+
+				function playHint() {
+					$('#hintRecording')[0].play();
+				}
+
+				$('#codeInputRow input').each(function(i) {
+					$(this).bind('input', function(e) {
+						checkOverallCorrectness();
+					});
+				});
+
+
+
+				/* TIMER */
+				var finishTime;
+				var totalTimeSec = 600;
+				var timer;
+				function timerStart() {
+					timerStop();
+					finishTime = (new Date()).getTime() + 1000 * totalTimeSec;
+					timer = setInterval(
+						function() {
+							timerTick();
+						},
+						17
+					);
+				}
+
+				function timerStop() {
+					clearInterval(timer);
+					$('#heartSlowSound')[0].pause();
+					$('#heartFastSound')[0].pause();
+				}
+
+				var playedAnnounce1 = false;
+				var playedAnnounce2 = false;
+				var playedAnnounce4 = false;
+				function timerTick() {
+					var remainingMillis = finishTime - (new Date()).getTime();
+					if (remainingMillis > 0 ) {
+						// Clock update
+						var ms = Math.floor(remainingMillis % 1000);
+						var s = Math.floor(remainingMillis / 1000) % 60;
+						var m = Math.floor(remainingMillis / 1000 / 60);
+						if (ms < 10) {
+							ms = "00" + ms;
+						} else if (ms < 100) {
+							ms = "0" + ms;
+						}
+						if (s < 10) {
+							s = "0" + s;
+						}
+						if (m < 10) {
+							m = "0" + m;
+						}
+						$("#countdown").text(m + ":" + s);
+
+						// Sounds
+						if (remainingMillis <= 1 * 1000) {
+							$('#heartSlowSound')[0].pause();
+							$('#heartFastSound')[0].pause();
+						} else if (remainingMillis <= 10 * 1000) {
+							$('#heartSlowSound')[0].pause();
+							$('#heartFastSound')[0].play();
+						} else if (remainingMillis <= 30 * 1000) {
+							$('#heartSlowSound')[0].play();
+							$('#heartFastSound')[0].pause();
+						} else if (remainingMillis <= (1 * 60 + 1) * 1000 && remainingMillis > (1 * 60 - 1) * 1000) {
+							if (!playedAnnounce1) {
+								playedAnnounce1 = true;
+								$('#announce_1')[0].play();
+							}
+						} else if (remainingMillis <= (2 * 60 + 1) * 1000 && remainingMillis > (2 * 60 - 1) * 1000) {
+							if (!playedAnnounce2) {
+								playedAnnounce2 = true;
+								$('#announce_2')[0].play();
+							}
+						} else if (remainingMillis <= (4 * 60 + 1) * 1000 && remainingMillis > (4 * 60 - 1) * 1000) {
+							if (!playedAnnounce4) {
+								playedAnnounce4 = true;
+								$('#announce_4')[0].play();
+							}
+						} else if (remainingMillis <= (6 * 60 + 1) * 1000 && remainingMillis > (6 * 60 - 1) * 1000) {
+							if (!playedAnnounce4) {
+								playedAnnounce4 = true;
+								$('#pullUpLong')[0].play();
+							}
+						} else if (remainingMillis <= (8 * 60 + 1) * 1000 && remainingMillis > (8 * 60 - 1) * 1000) {
+							if (!playedAnnounce4) {
+								playedAnnounce4 = true;
+								$('#pullUpLong')[0].play();
+							}
+						}
+					} else {
+						timerStop();
+						lose();
+					}
+				}
+
+
+				/* ADMIN */
+				$("#admin input").bind('input', function(e) {
+					var input = $("#admin input");
+					var inputText = input.val();
+					if (inputText == "starttimer") {
+						timerStart();
+						input.val("");
+					} else if (inputText == "startgame") {
+						input.val("");
+						startGame();
+					} else if (inputText == "stop") {
+						timerStop();
+						input.val("");
+					} else if (inputText.length == 5 && inputText[2] == ":") {
+						timerStop();
+						var minutes = parseInt(inputText[0] + inputText[1]);
+						var seconds = parseInt(inputText[3] + inputText[4]);
+						var allSeconds = 60 * minutes + seconds;
+						totalTimeSec = allSeconds;
+						$('#countdown').text(inputText);
+						input.val("");
+					}
+				});
+
+				/* JATEK ESEMENY */
+				function startGame() {
+					$('#announce_welcome')[0].play();
+					setTimeout(
+						function() { timerStart(); },
+    				13000);
+				}
+
+				// When you correctly guessed all numbers
+				function win() {
+					timerStop();
+					$('#lockSound')[0].play();
+					//$('#winSound')[0].play();
+					setTimeout(
+						function() { $('#announce_win')[0].play(); },
+    				1000);
+					$('#winScreen').slideDown(800);
+				}
+
+				// When the time has run out
+				function lose() {
+					timerStop();
+					$('#announce_lose')[0].play();
+					//$('#timeOutSound')[0].play();
+					$('#loseScreen').slideDown(800);
+					setTimeout(function() {
+						window.open("https://youtu.be/iTyJcZDvNbk?t=2m19s");
+					}, 3000);
+				}
+
+				// When you guessed all four numbers, but they are wrong
+				function incorrectGuess() {
+					$('#feedbackWrong').show();
+				}
+
+				// When not all numbers are guessed
+				function noGuess() {
+					$('#feedbackWrong').hide();
+				}
+			});
+		</script>
+
+		<!-- Sounds used from the following web sites:
+		http://soundbible.com/1455-Train-Horn-Low.html
+		http://soundbible.com/1496-Japanese-Temple-Bell-Small.html
+		http://soundbible.com/1474-Temple-Bell-Bigger.html
+		-->
+		<audio id="lockSound" src="hangok/lock-1.mp3" preload="auto"></audio>
+		<audio id="heartSlowSound" src="hangok/heartbeat-2.mp3" preload="auto"></audio>
+		<audio id="heartFastSound" src="hangok/heartbeat-3.mp3" preload="auto"></audio>
+		<audio id="winSound" src="hangok/gong-1.mp3" preload="auto"></audio>
+		<audio id="timeOutSound" src="hangok/bell-1.mp3" preload="auto"></audio>
+
+		<audio id="announce_welcome" src="hangok/announcements-hu/announce_welcome.mp3" preload="auto"></audio>
+		<audio id="announce_win" src="hangok/announcements-hu/announce_win.mp3" preload="auto"></audio>
+		<audio id="announce_lose" src="hangok/announcements-hu/announce_lose.mp3" preload="auto"></audio>
+		<audio id="announce_9" src="hangok/announcements-hu/announce_9mins.mp3" preload="auto"></audio>
+		<audio id="announce_7" src="hangok/announcements-hu/announce_7mins.mp3" preload="auto"></audio>
+		<audio id="announce_6" src="hangok/announcements-hu/announce_6mins.mp3" preload="auto"></audio>
+		<audio id="announce_5" src="hangok/announcements-hu/announce_5mins.mp3" preload="auto"></audio>
+		<audio id="announce_4" src="hangok/announcements-hu/announce_4mins.mp3" preload="auto"></audio>
+		<audio id="announce_3" src="hangok/announcements-hu/announce_3mins.mp3" preload="auto"></audio>
+		<audio id="announce_2" src="hangok/announcements-hu/announce_2mins.mp3" preload="auto"></audio>
+		<audio id="announce_1" src="hangok/announcements-hu/announce_1min.mp3" preload="auto"></audio>
+		<audio id="pullUpLong" src="hangok/pull-up-long.mp3" preload="auto"></audio>
+		<audio id="pullUpShort" src="hangok/pull-up-short.mp3" preload="auto"></audio>
+
+		<audio id="hintRecording" src="hangok/misc/himnusz-cut.m4a" preload="auto"></audio>
+
+
+		<div id="admin">
+			<input type="text" />
+		</div>
+
+		<div id="loseScreen" class="endScreen">
+			<p>Lej&aacute;rt az id&odblac;</p>
+		</div>
+
+		<div id="winScreen" class="endScreen">
+			<p>Nyertetek!</p>
+		</div>
+
+		<div id="countdown">
+			10:00
+		</div>
+
+		<div id="suits">
+			<table>
+                <tr id="textRowTop">
+                    <td colspan="3">
+                        <div>I AM</div>
+                    </td>
+                </tr>
+				<tr id="codeInputRow">
+					<td>
+						<input id="input1" type="text" placeholder="Ki" />
+					</td>
+					<td>
+						<input id="input2" type="text" placeholder="Mivel" />
+					</td>
+					<td>
+						<input id="input3" type="text" placeholder="Mikor: HH/NN" />
+					</td>
+				</tr>
+				<tr id="markRow">
+					<td>
+						<div id="cross1">&#10006;</div>
+						<div id="tick1">&#10004;</div>
+					</td>
+					<td>
+						<div id="cross2">&#10006;</div>
+						<div id="tick2">&#10004;</div>
+					</td>
+					<td>
+						<div id="cross3">&#10006;</div>
+						<div id="tick3">&#10004;</div>
+					</td>
+				</tr>
+                <tr id="textRowBottom">
+                    <td colspan="3">
+                        <div>LOCKED</div>
+                    </td>
+                </tr>
+			</table>
+		</div>
+
+	</body>
+</html>

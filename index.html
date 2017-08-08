@@ -215,41 +215,54 @@
 					return inputValue != "";
 				}
 
-				function setCheckMark(key) {
-					var completed = checkCompleted(key)
-					var cross = CROSS_MARKS[key];
-					var tick = TICK_MARKS[key];
-					if (!completed) {
-						cross.hide();
-						tick.hide();
-					} else {
-						var correct = checkCorrectness(key)
-						if (correct) {
-							cross.hide();
-							tick.show();
-						} else {
-							cross.show();
-							tick.hide();
-						}
-					}
-				}
+				// function setCheckMark(key) {
+				// 	var completed = checkCompleted(key)
+				// 	var cross = CROSS_MARKS[key];
+				// 	var tick = TICK_MARKS[key];
+				// 	if (!completed) {
+				// 		cross.hide();
+				// 		tick.hide();
+				// 	} else {
+				// 		var correct = checkCorrectness(key)
+				// 		if (correct) {
+				// 			cross.hide();
+				// 			tick.show();
+				// 		} else {
+				// 			cross.show();
+				// 			tick.hide();
+				// 		}
+				// 	}
+				// }
 
 				function checkOverallCorrectness() {
-					for (var key = 0; key < SOLUTION.length; key++) {
-						setCheckMark(key);
-					}
 					var overallCorrect = true;
+                    var overallComplete = true;
 					for (var key = 0; key < SOLUTION.length; key++) {
 						var complete = checkCompleted(key);
 						var correct = checkCorrectness(key);
 						if (!complete || !correct) {
 							overallCorrect = false;
-							break;
 						}
+                        if (!complete) {
+                            overallComplete = false;
+                        }
 					}
-					if (overallCorrect) {
-						playHint();
-					}
+                    var cross = CROSS_MARKS[0];
+                    var tick = TICK_MARKS[0];
+                    // Tick/cross
+                    if (overallComplete) {
+                        if (overallCorrect) {
+                            cross.hide();
+                            tick.show();
+                            playHint();
+                        } else {
+                            cross.show();
+                            tick.hide();
+                        }
+                    } else {
+                        cross.hide();
+                        tick.hide();
+                    }
 				}
 
 				function playHint() {
@@ -480,17 +493,9 @@
 					</td>
 				</tr>
 				<tr id="markRow">
-					<td>
+					<td colspan="3">
 						<div id="cross1">&#10006;</div>
 						<div id="tick1">&#10004;</div>
-					</td>
-					<td>
-						<div id="cross2">&#10006;</div>
-						<div id="tick2">&#10004;</div>
-					</td>
-					<td>
-						<div id="cross3">&#10006;</div>
-						<div id="tick3">&#10004;</div>
 					</td>
 				</tr>
                 <tr id="textRowBottom">

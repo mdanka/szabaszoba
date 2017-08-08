@@ -71,7 +71,9 @@
         font-size: 72px;
         font-weight: bold;
         color: white;
+        /*color: blue;*/
         text-shadow: 0 0 50px white;
+        /*text-shadow: 0 0 50px blue;*/
     }
 
 	tr#codeInputRow input[type=text] {
@@ -98,7 +100,7 @@
   	}
 
  	input#input1, input#input2 {
-		width: 300px;
+		width: 400px;
   	}
 
 	input#input3 {
@@ -132,7 +134,15 @@
 	}
 
     button#checkButton {
+        font-family: 'Courier New';
         font-size: 24px;
+        border: 0;
+        background: white;
+    }
+
+    div#infoText {
+        font-family: 'Courier New';
+        color: white;
     }
 
 	div#admin {
@@ -206,6 +216,8 @@
 				var CROSS_MARKS = [$("#cross1"), $("#cross2"), $("#cross3")]
 				var TICK_MARKS = [$("#tick1"), $("#tick2"), $("#tick3")]
 
+                var NUMBER_OF_TRIES = 3;
+
 				function checkCorrectness(key) {
 					input = INPUTS[key];
 					var inputValue = input.val().toUpperCase();
@@ -254,18 +266,16 @@
                     var cross = CROSS_MARKS[0];
                     var tick = TICK_MARKS[0];
                     // Tick/cross
-                    if (overallComplete) {
-                        if (overallCorrect) {
-                            cross.hide();
-                            tick.show();
-                            playHint();
-                        } else {
-                            cross.show();
-                            tick.hide();
-                        }
+                    if (overallCorrect) {
+                        cross.hide();
+                        tick.show();
+                        playHint();
                     } else {
                         cross.show();
                         tick.hide();
+                        if (NUMBER_OF_TRIES === 0) {
+                            loseWrong();
+                        }
                     }
 				}
 
@@ -280,6 +290,17 @@
                     tick.hide();
                 }
 
+                function decreaseTryNumber() {
+                    NUMBER_OF_TRIES -= 1;
+                    var text;
+                    if (NUMBER_OF_TRIES > 0) {
+                        text = "Még " + NUMBER_OF_TRIES + " próbálkozás";
+                    } else {
+                        text = "Nincs több próbálkozás";
+                    }
+                    $('#infoText').text(text);
+                }
+
 				$('#codeInputRow input').each(function(i) {
 					$(this).bind('input', function(e) {
 						resetCorrectnessMark();
@@ -288,6 +309,7 @@
 
                 $('#checkButton').each(function(i) {
                     $(this).bind('click', function(e) {
+                        decreaseTryNumber();
                         checkOverallCorrectness();
                     });
                 });
@@ -430,10 +452,12 @@
 					$('#announce_lose')[0].play();
 					//$('#timeOutSound')[0].play();
 					$('#loseScreen').slideDown(800);
-					setTimeout(function() {
-						window.open("https://youtu.be/iTyJcZDvNbk?t=2m19s");
-					}, 3000);
 				}
+
+                function loseWrong() {
+                    timerStop();
+                    $('#loseScreen').slideDown(800);
+                }
 
 				// When you guessed all four numbers, but they are wrong
 				function incorrectGuess() {
@@ -480,7 +504,7 @@
 		</div>
 
 		<div id="loseScreen" class="endScreen">
-			<p>Lej&aacute;rt az id&odblac;</p>
+			<p>Nem sikerült</p>
 		</div>
 
 		<div id="winScreen" class="endScreen">
@@ -510,12 +534,15 @@
 					</td>
 				</tr>
 				<tr id="markRow">
-					<td colspan="3">
+					<td>
                         <button id="checkButton">Ellenőrzés</button>
-						<div id="cross1">&#10006;</div>
-						<div id="tick1">&#10004;</div>
 					</td>
                     <td>
+                        <div id="cross1">&#10006;</div>
+                        <div id="tick1">&#10004;</div>
+                    </td>
+                    <td>
+                        <div id="infoText">Még 3 próbálkozás</div>
                     </td>
 				</tr>
                 <tr id="textRowBottom">

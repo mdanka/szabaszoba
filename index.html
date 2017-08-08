@@ -131,6 +131,10 @@
 		display: none;
 	}
 
+    button#checkButton {
+        font-size: 24px;
+    }
+
 	div#admin {
 		position: fixed;
 		top: 0;
@@ -260,7 +264,7 @@
                             tick.hide();
                         }
                     } else {
-                        cross.hide();
+                        cross.show();
                         tick.hide();
                     }
 				}
@@ -269,11 +273,24 @@
 					$('#hintRecording')[0].play();
 				}
 
+                function resetCorrectnessMark() {
+                    var cross = CROSS_MARKS[0];
+                    var tick = TICK_MARKS[0];
+                    cross.hide();
+                    tick.hide();
+                }
+
 				$('#codeInputRow input').each(function(i) {
 					$(this).bind('input', function(e) {
-						checkOverallCorrectness();
+						resetCorrectnessMark();
 					});
 				});
+
+                $('#checkButton').each(function(i) {
+                    $(this).bind('click', function(e) {
+                        checkOverallCorrectness();
+                    });
+                });
 
 
 
@@ -494,9 +511,12 @@
 				</tr>
 				<tr id="markRow">
 					<td colspan="3">
+                        <button id="checkButton">Ellenőrzés</button>
 						<div id="cross1">&#10006;</div>
 						<div id="tick1">&#10004;</div>
 					</td>
+                    <td>
+                    </td>
 				</tr>
                 <tr id="textRowBottom">
                     <td colspan="3">
